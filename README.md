@@ -1,15 +1,17 @@
 ## Install Elasticsearch
-- elasticsearch:7.11.1
-- kibana:7.11.1
-- Create a network:
-```sh
-docker network create elasticnet
-```
-Install Elasticsearch and Kibana by using the following command:
+Version: 8.13.2
+- Fill the `.env` file (following the `.env.example` file format): 
+```cp .env.example .env```
+
+- Install Elasticsearch and Kibana by using the following command:
 ```sh
 docker-compose up -d
 ```
-The previous command is going to spin up two docker containers that will be in the same Docker network and in detached mode. With this, you will be able to open the following urls :
-
-* http://localhost:5601/ - Kibana Web UI interface
-* http://localhost:9200/ - Elastic Search API
+- With this, you will be able to open the following urls :
+    - http://localhost:5601/ - Kibana Web UI interface
+    - http://localhost:9200/ - Elastic Search API
+- Login with user *elastic* ib tge Kibana Web UI, and run the following commands in the Kibana console to test the deployment:
+```
+GET _cluster/health
+GET _nodes/stats
+```
