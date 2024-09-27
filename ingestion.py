@@ -19,8 +19,6 @@ logger = get_logger("Ingest book")
 
 def get_paragraphs(pdf_path: str):
     search_engine = SearchEngine()
-
-    pdf_path = 'data/s3-userguide.pdf'
     pdf = fitz.open(pdf_path)
 
     sections = []
@@ -105,7 +103,7 @@ def get_paragraphs(pdf_path: str):
         # Export to Elastic search
         for _paragraph in page_paragraphs:
             _paragraph['_id'] = f"{_paragraph['page_number']}_{_paragraph['lines'][0]}_{_paragraph['lines'][0]}"
-        # search_engine.import_bulk(documents=page_paragraphs, index_name=INDEX_NAME)
+        search_engine.import_bulk(documents=page_paragraphs, index_name=INDEX_NAME)
         paragraphs.extend(page_paragraphs)
 
         if not _page_nth % 100:
