@@ -2,6 +2,8 @@ import fitz
 import logging
 import json
 
+from database.search_engine import SearchEngine
+
 TITLE_AND_TREE_CONTENTS = 25
 
 NEW_PARAGRAPH_THRESHOLD = 28
@@ -10,8 +12,12 @@ SECTION_FONTSIZE = 20
 SUBSECTION_FONTSIZE = 18
 SUBSUBSECTION_FONTSIZE = 16
 
+INDEX_NAME = 's3-userguide'
+
 
 def get_paragraphs(pdf_path: str):
+    search_engine = SearchEngine()
+
     pdf_path = '../data/s3-userguide.pdf'
     pdf = fitz.open(pdf_path)
 
@@ -94,10 +100,16 @@ def get_paragraphs(pdf_path: str):
 
                         previous_y = current_y
 
+        # Export to Elastic search
+        for _paragraph in page_paragraphs:
+            _paragraph['_id'] = f"{_paragraph['page_number']}_{_paragraph['lines'][0]}_{_paragraph['lines'][0]}"
+        # search_engine.import_bulk(documents=page_paragraphs, index_name=INDEX_NAME)
         paragraphs.extend(page_paragraphs)
 
+        if not _page_nth % 100:
+            logging.info(f"To page {_page_nth} / {len(pdf)}. Progress: {_page_nth / len(pdf) * 100:.2f}%")
+
     pdf.close()
-    logging.info(f"number of sections: {len(sections)}")
     return paragraphs
 
 
