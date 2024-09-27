@@ -1,8 +1,8 @@
 import fitz
-import logging
 import json
 
 from database.search_engine import SearchEngine
+from utils.logger_utils import get_logger
 
 TITLE_AND_TREE_CONTENTS = 25
 
@@ -14,11 +14,13 @@ SUBSUBSECTION_FONTSIZE = 16
 
 INDEX_NAME = 's3-userguide'
 
+logger = get_logger("Ingest book")
+
 
 def get_paragraphs(pdf_path: str):
     search_engine = SearchEngine()
 
-    pdf_path = '../data/s3-userguide.pdf'
+    pdf_path = 'data/s3-userguide.pdf'
     pdf = fitz.open(pdf_path)
 
     sections = []
@@ -107,14 +109,14 @@ def get_paragraphs(pdf_path: str):
         paragraphs.extend(page_paragraphs)
 
         if not _page_nth % 100:
-            logging.info(f"To page {_page_nth} / {len(pdf)}. Progress: {_page_nth / len(pdf) * 100:.2f}%")
+            logger.info(f"To page {_page_nth} / {len(pdf)}. Progress: {_page_nth / len(pdf) * 100:.2f}%")
 
     pdf.close()
     return paragraphs
 
 
 if __name__ == '__main__':
-    pdf_path = '../data/s3-userguide.pdf'
+    pdf_path = 'data/s3-userguide.pdf'
     paragraphs = get_paragraphs(pdf_path)
-    with open('../data/paragraphs.json', 'w') as f:
+    with open('data/paragraphs.json', 'w') as f:
         json.dump(paragraphs, f, indent=2)
