@@ -37,6 +37,11 @@ docker-compose up -d
 - With this, you will be able to open the following urls :
     - http://localhost:5601/ - Kibana Web UI interface
     - http://localhost:9200/ - Elastic Search API
+- To query the Elasticsearch node, copy the certificate file to your system:
+```bash
+docker cp searchengineretrieval-es01-1:/usr/share/elasticsearch/config/certs/ca/ca.crt /tmp/.
+```
+Then, you can run a curl command to query the Elasticsearch node: `curl --cacert /tmp/ca.crt -u elastic:changeme https://localhost:9200`
 - Login with user *elastic* ib tge Kibana Web UI, and run the following commands in the Kibana console to test the deployment:
 ```
 GET _cluster/health
