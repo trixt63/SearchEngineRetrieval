@@ -12,8 +12,6 @@ SECTION_FONTSIZE = 20
 SUBSECTION_FONTSIZE = 18
 SUBSUBSECTION_FONTSIZE = 16
 
-INDEX_NAME = 's3-userguide'
-
 logger = get_logger("Ingest book")
 
 
@@ -104,6 +102,7 @@ def get_paragraphs(pdf_path: str):
         ingest(data=page_paragraphs, search_engine=search_engine)
         paragraphs.extend(page_paragraphs)
 
+        # progress
         if not _page_nth % 100:
             logger.info(f"To page {_page_nth} / {len(pdf)}. Progress: {_page_nth / len(pdf) * 100:.2f}%")
 

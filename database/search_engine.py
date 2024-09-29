@@ -34,17 +34,15 @@ class SearchEngine:
         return result
 
     def import_bulk(self, documents: dict, index_name=SearchEngineConfig.INDEX_NAME):
-        # docs_to_insert = [
-        #     {
-        #         "_index": index_name,
-        #         "_id": doc.get("_id"),
-        #         "_source": doc
-        #     }
-        #     for doc in documents
-        # ]
-        # bulk(self._client, docs_to_insert)
-        for key, val in documents.items():
-            self._client.index(index=index_name, id=key, document=val)
+        docs_to_insert = [
+            {
+                "_index": index_name,
+                "_id": _id,
+                "_source": doc
+            }
+            for _id, doc in documents.items()
+        ]
+        bulk(self._client, docs_to_insert)
 
     def create_index(self, index_name):
         """Creates an index in Elasticsearch if one isn't already there."""
