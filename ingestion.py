@@ -101,9 +101,7 @@ def get_paragraphs(pdf_path: str):
                         previous_y = current_y
 
         # Export to Elastic search
-        for _paragraph in page_paragraphs:
-            _paragraph['_id'] = f"{_paragraph['page_number']}_{_paragraph['lines'][0]}_{_paragraph['lines'][0]}"
-        search_engine.import_bulk(documents=page_paragraphs, index_name=INDEX_NAME)
+        ingest(data=page_paragraphs, search_engine=search_engine)
         paragraphs.extend(page_paragraphs)
 
         if not _page_nth % 100:
@@ -111,6 +109,14 @@ def get_paragraphs(pdf_path: str):
 
     pdf.close()
     return paragraphs
+
+
+def ingest(data: list[dict], search_engine: SearchEngine):
+    dict_with_id = {
+        f"{doc['page_number']}_{doc['lines'][0]}_{doc['lines'][0]}": doc
+        for doc in data
+    }
+    search_engine.import_bulk(documents=dict_with_id)
 
 
 if __name__ == '__main__':

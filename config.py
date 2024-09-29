@@ -5,9 +5,10 @@ load_dotenv()
 
 
 class SearchEngineConfig:
-    HOST = os.environ.get("ES_HOST", '0.0.0.0')
+    HOST = os.environ.get("ES_HOST", 'localhost')
     PORT = os.environ.get("ES_PORT", '9200')
     USERNAME = os.environ.get("ES_USERNAME", "elastic")
     PASSWORD = os.environ.get("ELASTIC_PASSWORD")
 
-    BOOK_INDEX = 's3-userguide'
+    CA_CERT_PATH = os.environ.get("CA_CERT_PATH")
+    INDEX_NAME = os.environ.get("INDEX_NAME", "s3-userguide")
