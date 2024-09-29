@@ -50,14 +50,50 @@ GET _nodes/stats
 
 ## 2. Ingest data from book
 - First, create a subfolder `data/` and put the pdf file there: `data/s3-userguide.pdf`
-- Create a index on Elasticsearch cluster with name *s3-userguide*
 - Run Python script in `ingestion.py`: 
 ```
 python3 ingestion.py
 ```
+- The content of the guide will be organize into **s3-userguide** index on Elasticsearch. The mapping of the index is as 
+follow:
+```json
+{
+  "mappings": {
+    "properties": {
+      "lines": {
+        "type": "integer",
+        "index": false
+      },
+      "page_number": {
+        "type": "integer"
+      },
+      "section": {
+        "type": "keyword"
+      },
+      "subsection": {
+        "type": "keyword"
+      },
+      "subsubsection": {
+        "type": "keyword"
+      },
+      "text": {
+        "type": "text",
+        "analyzer": "standard"
+      }
+    }
+  }
+}
+```
+- Each document is one paragraph of the book, with *_id* being a string following the structure `<page>_<first-line>_<last-line>`.
+For example, a paragraph spans from line 1 to line 9 on page 479 will have the _id: *479_1_9*
+![web ui](assets/index-documents.jpg)
 
 ## 3. Search with keyword
-- Open Kibana WebUI on http://localhost:5601/, then search with the following syntax on the console:
+- Method 1: run `search_keyword.py ` script, passing into argument `--query` the to-be-searched keyword: 
+```bash
+python3 search_keyword.py --query "Amazone S3 Express One Zone"
+```
+- Method 2: Open Kibana WebUI on http://localhost:5601/, then search with the following syntax on the Dev Tools console:
 ```
 GET s3-userguide/_search
 {
