@@ -12,8 +12,6 @@ SECTION_FONTSIZE = 20
 SUBSECTION_FONTSIZE = 18
 SUBSUBSECTION_FONTSIZE = 16
 
-INDEX_NAME = 's3-userguide'
-
 logger = get_logger("Ingest book")
 
 
@@ -101,16 +99,24 @@ def get_paragraphs(pdf_path: str):
                         previous_y = current_y
 
         # Export to Elastic search
-        for _paragraph in page_paragraphs:
-            _paragraph['_id'] = f"{_paragraph['page_number']}_{_paragraph['lines'][0]}_{_paragraph['lines'][0]}"
-        search_engine.import_bulk(documents=page_paragraphs, index_name=INDEX_NAME)
+        ingest_elasticsearch(data=page_paragraphs, search_engine=search_engine)
         paragraphs.extend(page_paragraphs)
 
+        # progress
         if not _page_nth % 100:
             logger.info(f"To page {_page_nth} / {len(pdf)}. Progress: {_page_nth / len(pdf) * 100:.2f}%")
 
     pdf.close()
     return paragraphs
+
+
+def ingest_elasticsearch(data: list[dict], search_engine: SearchEngine):
+    """Export data to Elasticsearch"""
+    dict_with_id = {
+        f"{doc['page_number']}_{doc['lines'][0]}_{doc['lines'][0]}": doc
+        for doc in data
+    }
+    search_engine.import_bulk(documents=dict_with_id)
 
 
 if __name__ == '__main__':
