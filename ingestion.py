@@ -99,7 +99,7 @@ def get_paragraphs(pdf_path: str):
                         previous_y = current_y
 
         # Export to Elastic search
-        ingest(data=page_paragraphs, search_engine=search_engine)
+        ingest_elasticsearch(data=page_paragraphs, search_engine=search_engine)
         paragraphs.extend(page_paragraphs)
 
         # progress
@@ -110,7 +110,8 @@ def get_paragraphs(pdf_path: str):
     return paragraphs
 
 
-def ingest(data: list[dict], search_engine: SearchEngine):
+def ingest_elasticsearch(data: list[dict], search_engine: SearchEngine):
+    """Export data to Elasticsearch"""
     dict_with_id = {
         f"{doc['page_number']}_{doc['lines'][0]}_{doc['lines'][0]}": doc
         for doc in data
